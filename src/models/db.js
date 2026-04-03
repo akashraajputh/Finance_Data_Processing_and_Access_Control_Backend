@@ -2,10 +2,18 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 
-const dbFile = process.env.NODE_ENV === 'test' ? path.join(__dirname, '..', '..', 'data', 'test.db') : path.join(__dirname, '..', '..', 'data', 'finance.db');
-const dbDir = path.dirname(dbFile);
+const defaultDbPath = process.env.NODE_ENV === 'test'
+  ? path.join(__dirname, '..', '..', 'data', 'test.db')
+  : path.join(__dirname, '..', '..', 'data', 'finance.db');
 
-if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
+// Render free dyno has no persistent disk; use /tmp for ephemeral storage there.
+const dbFile = process.env.DB_PATH || (process.env.NODE_ENV === 'production' ? '/tmp/db.sqlite' : defaultDbPath);
+
+// For /tmp or paths that are not file-based, skip directory creation.
+if (!dbFile.startsWith('/tmp')) {
+  const dbDir = path.dirname(dbFile);
+  if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
+}
 
 const db = new sqlite3.Database(dbFile, (err) => {
   if (err) {

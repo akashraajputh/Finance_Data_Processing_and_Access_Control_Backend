@@ -83,6 +83,35 @@ Or with docker-compose:
 - `http://localhost:4000/auth/login`
 - `http://localhost:4000/api-docs`
 
+## Deployment
+
+### Render (Free Plan)
+This project is configured to deploy on Render's free plan with ephemeral SQLite storage.
+
+1. Push code to GitHub
+2. On Render Dashboard:
+   - New Web Service → connect repo
+   - Branch: `main`
+   - Build command: `npm install && npm rebuild sqlite3 --build-from-source`
+   - Start command: `node src/index.js`
+   - Instance: Free
+3. Environment variables:
+   - `JWT_SECRET=<your_secret_key>`
+   - `DB_PATH=/tmp/db.sqlite` (optional; defaults to /tmp)
+4. Deploy → get URL
+5. Test: `https://<your-app>.onrender.com/health`
+
+**Note**: Free plan uses ephemeral storage; data resets on app restart. For persistent storage, upgrade to Starter plan or use Render Postgres.
+
+### Railway
+Alternatively, deploy on Railway:
+1. New Project → Deploy from GitHub
+2. Railway auto-detects Node.js
+3. Add env: `JWT_SECRET=...`
+4. Deploy → runs on free tier
+
+For persistent database on free tier, add Railway Postgres plugin.
+
 ## Notes
 - Production: set `JWT_SECRET` env var and use proper DB
 - Tokens expire in 1 hour; implement refresh if needed
