@@ -22,7 +22,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: 'http://localhost:10000',
+        url: 'https://finance-data-processing-and-access-7hr4.onrender.com',
         description: 'Development server',
       },
     ],
